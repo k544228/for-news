@@ -1,15 +1,18 @@
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
+      {/* Header - Index Page */}
       <header className="bg-blue-600 text-white p-6 text-center">
         <h1 className="text-4xl font-bold">FOR-NEWS 🗞️</h1>
-        <p className="text-blue-100 mt-2">國際新聞幽默解讀平台</p>
+        <p className="text-blue-100 mt-2">首頁 | 國際新聞幽默解讀平台</p>
+        <p className="text-blue-200 text-sm mt-1">Index - Homepage</p>
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        {/* 更新時間顯示 */}
+        {/* 首頁歡迎和更新時間顯示 */}
         <div className="text-center mb-8 text-gray-600">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">📰 歡迎來到FOR-NEWS首頁</h2>
+          <p className="text-lg text-gray-700 mb-2">Index Page - 新聞總覽</p>
           <p className="text-sm">
             等待首次更新 - 每天早晚8點自動更新
           </p>

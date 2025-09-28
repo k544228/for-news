@@ -32,12 +32,20 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchNews = async () => {
+  const fetchNews = async (useRefresh = false) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/news');
+      let response;
+      if (useRefresh) {
+        // 使用刷新API獲取最新內容
+        response = await fetch('/api/refresh', { method: 'POST' });
+      } else {
+        // 使用一般API（可能包含RSS）
+        response = await fetch('/api/news');
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -153,7 +161,7 @@ export default function HomePage() {
           {/* 手動刷新按鈕 */}
           <div style={{ marginTop: '1rem' }}>
             <button
-              onClick={fetchNews}
+              onClick={() => fetchNews(false)}
               disabled={loading}
               style={{
                 backgroundColor: loading ? '#9ca3af' : '#2563eb',
@@ -169,14 +177,34 @@ export default function HomePage() {
               onMouseOver={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#1d4ed8')}
               onMouseOut={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#2563eb')}
             >
-              {loading ? '🔄 載入中...' : '🔄 刷新新聞'}
+              {loading ? '🔄 載入中...' : '📡 抓取新聞'}
+            </button>
+
+            <button
+              onClick={() => fetchNews(true)}
+              disabled={loading}
+              style={{
+                backgroundColor: loading ? '#9ca3af' : '#dc2626',
+                color: 'white',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '8px',
+                border: 'none',
+                fontSize: '0.9rem',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                marginRight: '0.5rem',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseOver={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#b91c1c')}
+              onMouseOut={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#dc2626')}
+            >
+              {loading ? '🔄 載入中...' : '🆕 生成新聞'}
             </button>
 
             <button
               onClick={() => {
                 const now = new Date().toLocaleString('zh-TW');
                 const status = newsData ? `最後更新：${new Date(newsData.lastUpdated).toLocaleString('zh-TW')}` : '尚未載入新聞';
-                alert(`當前時間：${now}\n\n📢 使用說明：\n- 點擊「刷新新聞」可獲取最新內容\n- 點擊新聞卡片可查看詳細內容\n- 有鏈接的新聞會開啟原文頁面\n- ${status}\n\n歡迎經常回來查看最新消息！`);
+                alert(`當前時間：${now}\n\n📢 使用說明：\n📡 「抓取新聞」- 嘗試從RSS獲取真實新聞\n🆕 「生成新聞」- 生成最新的示例新聞內容\n- 點擊新聞卡片可查看詳細內容\n- 有鏈接的新聞會開啟原文頁面\n- ${status}\n\n兩種模式都會提供優質新聞內容！`);
               }}
               style={{
                 backgroundColor: '#059669',

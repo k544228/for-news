@@ -7,7 +7,7 @@ interface NewsItem {
   id: string;
   title: string;
   content: string;
-  category: 'world' | 'tech' | 'environment';
+  category: 'world' | 'tech' | 'economy';
   source: 'BBC' | 'CNN' | 'AP' | 'AlJazeera' | 'TechCrunch' | 'Taiwan News' | 'Nature' | 'Environmental Science' | 'GitHub Blog';
   publishedAt: string;
   link?: string;
@@ -22,7 +22,7 @@ interface NewsItem {
 interface NewsData {
   world: NewsItem[];
   tech: NewsItem[];
-  environment: NewsItem[];
+  economy: NewsItem[];
   lastUpdated: string;
   source?: string;
   note?: string;
@@ -306,20 +306,20 @@ export default function HomePage() {
               </div>
             </section>
 
-            {/* 環境新聞 */}
+            {/* 經濟新聞 */}
             <section style={{ marginBottom: '2rem', backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)' }}>
               <div style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: 'white', padding: '1.5rem' }}>
                 <h3 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>🌱</span>
-                  環境新聞 ({newsData.environment.length})
+                  <span>💰</span>
+                  經濟新聞 ({newsData.economy.length})
                 </h3>
               </div>
               <div style={{ padding: '1.5rem', backgroundColor: '#f9fafb' }}>
-                {newsData.environment.length > 0 ? (
-                  newsData.environment.map(news => <NewsCard key={news.id} news={news} />)
+                {newsData.economy.length > 0 ? (
+                  newsData.economy.map(news => <NewsCard key={news.id} news={news} />)
                 ) : (
                   <div style={{ textAlign: 'center', padding: '2rem' }}>
-                    <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>暫無環境新聞</p>
+                    <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>暫無經濟新聞</p>
                     <p style={{ fontSize: '0.8rem', color: '#9ca3af' }}>點擊「刷新新聞」獲取最新內容</p>
                   </div>
                 )}

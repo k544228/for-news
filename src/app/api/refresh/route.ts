@@ -67,33 +67,33 @@ export async function POST() {
           }
         }
       ],
-      environment: [
+      economy: [
         {
-          id: `env-${timeStamp}-1`,
-          title: `創新突破：新型海水淡化技術成本降低50%`,
-          content: `科學家開發出革命性的海水淡化技術，使用太陽能驅動，成本比傳統方法低50%...`,
-          category: 'environment' as const,
-          source: 'Nature' as const,
+          id: `economy-${timeStamp}-1`,
+          title: `股市大漲：全球科技股創新高，AI概念股領漲`,
+          content: `受人工智慧技術突破影響，全球主要股市科技股大幅上漲，投資者對AI產業前景樂觀...`,
+          category: 'economy' as const,
+          source: 'BBC' as const,
           publishedAt: new Date(timeStamp - 9000000).toISOString(),
           analysis: {
-            affectedGroups: ['缺水地區居民', '環保組織', '水資源公司', '沿海國家'],
-            beforeImpact: '海水淡化成本高昂，限制了大規模應用',
-            afterImpact: '低成本淡化技術解決全球水資源短缺問題',
-            humorousInterpretation: '海水：「我終於可以變成淡水了！不過記得給我留點鹽分做調味料 🌊💧」'
+            affectedGroups: ['股票投資者', '科技公司', '基金經理', '退休基金'],
+            beforeImpact: '科技股估值偏高，投資者態度謹慎',
+            afterImpact: 'AI熱潮推動股價上升，投資信心增強',
+            humorousInterpretation: '股票：「終於輪到我們AI概念股出頭了！漲停板都不夠表達我的興奮 📈🚀」'
           }
         },
         {
-          id: `env-${timeStamp}-2`,
-          title: `全球森林復育計劃：AI技術助力植樹效率提升10倍`,
-          content: `結合AI和無人機技術的植樹計劃在全球多地展開，自動化播種系統大幅提升造林效率...`,
-          category: 'environment' as const,
-          source: 'Environmental Science' as const,
+          id: `economy-${timeStamp}-2`,
+          title: `物價調查：消費品價格普遍回落，通膨壓力緩解`,
+          content: `最新調查顯示，食品、能源等主要消費品價格出現回落趨勢，消費者購買力有所提升...`,
+          category: 'economy' as const,
+          source: 'CNN' as const,
           publishedAt: new Date(timeStamp - 10800000).toISOString(),
           analysis: {
-            affectedGroups: ['環保組織', '林業工作者', '當地社區', '野生動物'],
-            beforeImpact: '人工植樹速度慢，難以跟上森林砍伐速度',
-            afterImpact: 'AI輔助大幅提升造林效率，加速生態恢復',
-            humorousInterpretation: '樹苗：「哇！現在有AI和無人機幫我們找新家，搬家效率比人類快多了！🌱🤖」'
+            affectedGroups: ['消費者', '零售業者', '央行政策制定者', '企業經營者'],
+            beforeImpact: '高通膨導致消費者負擔加重，消費意願下降',
+            afterImpact: '物價回穩刺激消費，經濟活動逐漸復甦',
+            humorousInterpretation: '錢包：「太好了！終於不用每次購物都被掏空了，可以鬆一口氣 💰😌」'
           }
         }
       ]

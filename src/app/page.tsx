@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 
+// 新聞項目類型定義
 interface NewsItem {
   id: string;
   title: string;
   content: string;
   category: 'world' | 'tech' | 'environment';
-  source: 'BBC' | 'CNN' | 'AP' | 'AlJazeera';
+  source: 'BBC' | 'CNN' | 'AP' | 'AlJazeera' | 'TechCrunch' | 'Taiwan News' | 'Nature' | 'Environmental Science' | 'GitHub Blog';
   publishedAt: string;
   link?: string;
   analysis?: {

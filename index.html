@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOR-NEWS - 首頁 | 國際新聞幽默解讀平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            color: #dbeafe;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header .index-label {
+            color: #bfdbfe;
+            font-size: 0.9rem;
+        }
+
+        /* Main content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-section h2 {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-section .subtitle {
+            font-size: 1.25rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section .update-info {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* News sections */
+        .news-grid {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .news-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .news-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-header {
+            padding: 1.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .news-header.world {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .news-header.tech {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .news-header.environment {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        .news-header h3 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .news-content {
+            padding: 2rem;
+            background: #f9fafb;
+            text-align: center;
+        }
+
+        .news-content p {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-content .update-time {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header - Index Page -->
+    <header class="header">
+        <h1>FOR-NEWS 🗞️</h1>
+        <p class="subtitle">首頁 | 國際新聞幽默解讀平台</p>
+        <p class="index-label">Index - Homepage</p>
+    </header>
+
+    <main class="container">
+        <!-- 首頁歡迎和更新時間顯示 -->
+        <div class="welcome-section">
+            <h2>📰 歡迎來到FOR-NEWS首頁</h2>
+            <p class="subtitle">Index Page - 新聞總覽</p>
+            <p class="update-info">
+                <span class="status-indicator"></span>
+                等待首次更新 - 每天早晚8點自動更新
+            </p>
+        </div>
+
+        <!-- 新聞分類區塊 -->
+        <div class="news-grid">
+            <!-- 世界新聞 -->
+            <section class="news-section">
+                <div class="news-header world">
+                    <h3>
+                        <span>📰</span>
+                        世界新聞
+                    </h3>
+                </div>
+                <div class="news-content">
+                    <p>暫無世界新聞</p>
+                    <p class="update-time">新聞將會每天早晚8點更新</p>
+                </div>
+            </section>
+
+            <!-- 科技新聞 -->
+            <section class="news-section">
+                <div class="news-header tech">
+                    <h3>
+                        <span>💻</span>
+                        科技新聞
+                    </h3>
+                </div>
+                <div class="news-content">
+                    <p>暫無科技新聞</p>
+                    <p class="update-time">新聞將會每天早晚8點更新</p>
+                </div>
+            </section>
+
+            <!-- 環境新聞 -->
+            <section class="news-section">
+                <div class="news-header environment">
+                    <h3>
+                        <span>🌱</span>
+                        環境新聞
+                    </h3>
+                </div>
+                <div class="news-content">
+                    <p>暫無環境新聞</p>
+                    <p class="update-time">新聞將會每天早晚8點更新</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>FOR-NEWS © 2025 - 用幽默的方式理解世界 🌍</p>
+    </footer>
+
+    <script>
+        // 簡單的交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('FOR-NEWS Index Page 已載入');
+
+            // 點擊新聞區塊的效果
+            const newsSections = document.querySelectorAll('.news-section');
+            newsSections.forEach(section => {
+                section.addEventListener('click', function() {
+                    alert('這是 ' + this.querySelector('h3').textContent.trim() + ' 區塊\n\n新聞內容將在系統更新後顯示');
+                });
+            });
+
+            // 更新時間顯示
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-TW');
+            const statusText = document.querySelector('.update-info');
+
+            // 在載入時顯示當前時間
+            setTimeout(() => {
+                statusText.innerHTML = `<span class="status-indicator"></span>頁面載入時間：${timeString} - 等待新聞更新`;
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

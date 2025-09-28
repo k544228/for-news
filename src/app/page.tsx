@@ -52,13 +52,13 @@ export default function HomePage() {
               onMouseOver={(e) => e.target.style.backgroundColor = '#1d4ed8'}
               onMouseOut={(e) => e.target.style.backgroundColor = '#2563eb'}
             >
-              🔄 手動刷新頁面
+              🔄 刷新頁面
             </button>
 
             <button
               onClick={() => {
                 const now = new Date().toLocaleString('zh-TW');
-                alert(`頁面刷新時間：${now}\n\n編輯者提示：\n- 手動刷新可重新載入最新內容\n- 每天早晚8點系統自動更新新聞\n- 如需編輯功能請聯繫管理員`);
+                alert(`當前時間：${now}\n\n📢 使用說明：\n- 點擊「刷新頁面」可重新載入最新內容\n- 系統每天早晚8點自動更新新聞\n- 如有問題可重新整理頁面\n- 歡迎經常回來查看最新消息！`);
               }}
               style={{
                 backgroundColor: '#059669',
@@ -73,7 +73,7 @@ export default function HomePage() {
               onMouseOver={(e) => e.target.style.backgroundColor = '#047857'}
               onMouseOut={(e) => e.target.style.backgroundColor = '#059669'}
             >
-              ℹ️ 編輯者資訊
+              ℹ️ 使用說明
             </button>
           </div>
         </div>

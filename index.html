@@ -197,6 +197,19 @@
                 <span class="status-indicator"></span>
                 等待首次更新 - 每天早晚8點自動更新
             </p>
+
+            <!-- 刷新按鈕 -->
+            <div style="margin-top: 1rem;">
+                <button onclick="window.location.reload()"
+                        style="background-color: #2563eb; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; font-size: 0.9rem; cursor: pointer; margin-right: 0.5rem; transition: background-color 0.2s;">
+                    🔄 刷新頁面
+                </button>
+
+                <button onclick="showInfo()"
+                        style="background-color: #059669; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; font-size: 0.9rem; cursor: pointer; transition: background-color 0.2s;">
+                    ℹ️ 使用說明
+                </button>
+            </div>
         </div>
 
         <!-- 新聞分類區塊 -->
@@ -273,6 +286,12 @@
                 statusText.innerHTML = `<span class="status-indicator"></span>頁面載入時間：${timeString} - 等待新聞更新`;
             }, 1000);
         });
+
+        // 顯示使用說明
+        function showInfo() {
+            const now = new Date().toLocaleString('zh-TW');
+            alert(`當前時間：${now}\n\n📢 使用說明：\n- 點擊「刷新頁面」可重新載入最新內容\n- 系統每天早晚8點自動更新新聞\n- 如有問題可重新整理頁面\n- 歡迎經常回來查看最新消息！`);
+        }
     </script>
 </body>
 </html>

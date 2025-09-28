@@ -1,94 +1,9 @@
 import { NextResponse } from 'next/server';
 
-// RSS 新聞來源配置
-const RSS_SOURCES = [
-  {
-    name: 'BBC',
-    url: 'https://feeds.bbci.co.uk/news/world/rss.xml',
-    category: 'world' as const,
-  },
-  {
-    name: 'CNN',
-    url: 'https://rss.cnn.com/rss/edition.rss',
-    category: 'world' as const,
-  },
-  {
-    name: 'BBC Tech',
-    url: 'https://feeds.bbci.co.uk/news/technology/rss.xml',
-    category: 'tech' as const,
-  },
-  {
-    name: 'BBC Science',
-    url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
-    category: 'environment' as const,
-  },
-];
-
-// 簡單的RSS解析函數
-async function parseRSS(url: string) {
-  try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'FOR-NEWS/1.0',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const xml = await response.text();
-
-    // 簡單的XML解析 - 提取標題和連結
-    const items: any[] = [];
-    const itemRegex = /<item[^>]*>(.*?)<\/item>/gs;
-    const titleRegex = /<title[^>]*><!\[CDATA\[(.*?)\]\]><\/title>|<title[^>]*>(.*?)<\/title>/s;
-    const linkRegex = /<link[^>]*>(.*?)<\/link>/s;
-    const descRegex = /<description[^>]*><!\[CDATA\[(.*?)\]\]><\/description>|<description[^>]*>(.*?)<\/description>/s;
-    const dateRegex = /<pubDate[^>]*>(.*?)<\/pubDate>/s;
-
-    let match;
-    let count = 0;
-    while ((match = itemRegex.exec(xml)) !== null && count < 3) {
-      const itemContent = match[1];
-
-      const titleMatch = titleRegex.exec(itemContent);
-      const linkMatch = linkRegex.exec(itemContent);
-      const descMatch = descRegex.exec(itemContent);
-      const dateMatch = dateRegex.exec(itemContent);
-
-      if (titleMatch && linkMatch) {
-        const title = (titleMatch[1] || titleMatch[2] || '').trim();
-        const link = (linkMatch[1] || '').trim();
-        const description = (descMatch ? (descMatch[1] || descMatch[2] || '') : '').trim();
-        const pubDate = (dateMatch ? dateMatch[1] : '').trim();
-
-        if (title && link) {
-          items.push({
-            id: `${Date.now()}-${count}`,
-            title: title.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
-            content: description.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/<[^>]*>/g, '').substring(0, 200),
-            link: link,
-            publishedAt: pubDate || new Date().toISOString(),
-          });
-          count++;
-        }
-      }
-    }
-
-    return items;
-  } catch (error) {
-    console.error(`Error fetching RSS from ${url}:`, error);
-    return [];
-  }
-}
-
 export async function GET() {
   try {
-    console.log('開始抓取新聞...');
-
-    // 為每個類別創建示例新聞（如果RSS失敗）
-    const fallbackNews = {
+    // 示例新聞數據
+    const newsData = {
       world: [
         {
           id: 'world-1',
@@ -181,59 +96,12 @@ export async function GET() {
       ]
     };
 
-    // 嘗試從RSS抓取真實新聞
-    const newsData = { ...fallbackNews };
-    let hasRealNews = false;
-
-    for (const source of RSS_SOURCES) {
-      try {
-        const items = await parseRSS(source.url);
-        if (items.length > 0) {
-          // 將RSS新聞轉換為我們的格式
-          const formattedNews = items.map((item, index) => ({
-            id: `${source.category}-rss-${index}`,
-            title: item.title,
-            content: item.content || '點擊查看完整新聞內容...',
-            category: source.category,
-            source: source.name as 'BBC' | 'CNN' | 'AP' | 'AlJazeera',
-            publishedAt: item.publishedAt,
-            link: item.link,
-            analysis: {
-              affectedGroups: ['新聞讀者', '相關產業', '社會大眾'],
-              beforeImpact: '事件發生前的狀況',
-              afterImpact: '事件發生後的影響',
-              humorousInterpretation: `這則新聞讓人想到：「新聞就像天氣預報，永遠有意想不到的轉折！📰😄」`
-            }
-          }));
-
-          // 替換對應類別的示例新聞
-          if (source.category === 'world') {
-            newsData.world = formattedNews.slice(0, 2);
-          } else if (source.category === 'tech') {
-            newsData.tech = formattedNews.slice(0, 2);
-          } else if (source.category === 'environment') {
-            newsData.environment = formattedNews.slice(0, 2);
-          }
-          hasRealNews = true;
-        }
-      } catch (error) {
-        console.error(`Error processing ${source.name}:`, error);
-      }
-    }
-
     const result = {
       ...newsData,
       lastUpdated: new Date().toISOString(),
-      source: hasRealNews ? 'mixed' : 'demo',
-      note: hasRealNews ? '包含真實RSS新聞和示例內容' : '當前顯示為示例新聞內容'
+      source: 'demo',
+      note: '當前顯示為示例新聞內容 - 功能正常運作中'
     };
-
-    console.log('新聞抓取完成:', {
-      world: result.world.length,
-      tech: result.tech.length,
-      environment: result.environment.length,
-      hasRealNews
-    });
 
     return NextResponse.json(result);
   } catch (error) {

@@ -166,8 +166,8 @@ export default function HomePage() {
                 marginRight: '0.5rem',
                 transition: 'background-color 0.2s'
               }}
-              onMouseOver={(e) => !loading && (e.target.style.backgroundColor = '#1d4ed8')}
-              onMouseOut={(e) => !loading && (e.target.style.backgroundColor = '#2563eb')}
+              onMouseOver={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#1d4ed8')}
+              onMouseOut={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#2563eb')}
             >
               {loading ? '🔄 載入中...' : '🔄 刷新新聞'}
             </button>
@@ -188,8 +188,8 @@ export default function HomePage() {
                 cursor: 'pointer',
                 transition: 'background-color 0.2s'
               }}
-              onMouseOver={(e) => e.target.style.backgroundColor = '#047857'}
-              onMouseOut={(e) => e.target.style.backgroundColor = '#059669'}
+              onMouseOver={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = '#047857')}
+              onMouseOut={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = '#059669')}
             >
               ℹ️ 使用說明
             </button>

@@ -2,119 +2,95 @@
 
 import { useState, useEffect } from 'react';
 
-// 新聞項目類型定義
-interface NewsItem {
-  id: string;
+// RSS新聞項目類型
+interface RSSNewsItem {
   title: string;
-  content: string;
-  category: 'world' | 'tech' | 'economy';
-  source: 'BBC' | 'CNN' | 'AP' | 'AlJazeera' | 'TechCrunch' | 'Taiwan News' | 'Nature' | 'Environmental Science' | 'GitHub Blog';
-  publishedAt: string;
-  link?: string;
-  analysis?: {
-    affectedGroups: string[];
-    beforeImpact: string;
-    afterImpact: string;
-    humorousInterpretation: string;
-  };
+  link: string;
+  pubDate: string;
+  source: string;
 }
 
-interface NewsData {
-  world: NewsItem[];
-  tech: NewsItem[];
-  economy: NewsItem[];
-  lastUpdated: string;
-  source?: string;
-  note?: string;
+// 擷取的文章內容類型
+interface ExtractedArticle {
+  title: string;
+  content: string;
+  textContent: string;
+  author?: string;
+  publishDate?: string;
+  url: string;
 }
 
 export default function HomePage() {
-  const [newsData, setNewsData] = useState<NewsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [rssNews, setRssNews] = useState<RSSNewsItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [inputUrl, setInputUrl] = useState('');
+  const [extractedArticle, setExtractedArticle] = useState<ExtractedArticle | null>(null);
+  const [extracting, setExtracting] = useState(false);
 
-  const fetchNews = async (useRefresh = false) => {
+  // 載入RSS新聞
+  const loadRSSNews = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      let response;
-      if (useRefresh) {
-        // 使用刷新API獲取最新內容
-        response = await fetch('/api/refresh', { method: 'POST' });
-      } else {
-        // 使用一般API（可能包含RSS）
-        response = await fetch('/api/news');
-      }
-
+      const response = await fetch('/api/rss-feeds');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setNewsData(data);
+      setRssNews(data.articles || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '載入新聞時發生錯誤');
+      setError(err instanceof Error ? err.message : '載入RSS新聞時發生錯誤');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchNews();
-  }, []);
+  // 擷取文章內容
+  const extractContent = async () => {
+    if (!inputUrl.trim()) {
+      alert('請輸入有效的新聞網址');
+      return;
+    }
 
-  const NewsCard = ({ news }: { news: NewsItem }) => (
-    <div
-      style={{
-        backgroundColor: 'white',
-        padding: '1.5rem',
-        borderRadius: '8px',
-        marginBottom: '1rem',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        cursor: news.link ? 'pointer' : 'default',
-        transition: 'transform 0.2s, box-shadow 0.2s'
-      }}
-      onClick={() => {
-        if (news.link) {
-          window.open(news.link, '_blank');
-        } else {
-          alert(`${news.title}\n\n${news.content}\n\n來源：${news.source}\n發布時間：${new Date(news.publishedAt).toLocaleString('zh-TW')}`);
-        }
-      }}
-      onMouseOver={(e) => {
-        if (news.link) {
-          e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.15)';
-        }
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-      }}
-    >
-      <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#1f2937' }}>
-        {news.title}
-      </h4>
-      <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '0.75rem', lineHeight: '1.4' }}>
-        {news.content.length > 100 ? `${news.content.substring(0, 100)}...` : news.content}
-      </p>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: '#9ca3af' }}>
-        <span>📰 {news.source}</span>
-        <span>{new Date(news.publishedAt).toLocaleDateString('zh-TW')}</span>
-      </div>
-      {news.analysis && (
-        <div style={{ marginTop: '0.75rem', padding: '0.75rem', backgroundColor: '#fffbeb', borderRadius: '6px', borderLeft: '3px solid #f59e0b' }}>
-          <p style={{ fontSize: '0.8rem', color: '#92400e', fontStyle: 'italic' }}>
-            💭 {news.analysis.humorousInterpretation}
-          </p>
-        </div>
-      )}
-    </div>
-  );
+    setExtracting(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/extract-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: inputUrl.trim() }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setExtractedArticle(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '擷取內容時發生錯誤');
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  // 頁面載入時自動抓取RSS
+  useEffect(() => {
+    loadRSSNews();
+  }, []);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
-      {/* Header - Index Page */}
+      {/* Header */}
       <header style={{
         background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
         color: 'white',
@@ -122,219 +98,306 @@ export default function HomePage() {
         textAlign: 'center'
       }}>
         <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-          FOR-NEWS 🗞️
+          FOR-NEWS 📰
         </h1>
         <p style={{ color: '#dbeafe', fontSize: '1.1rem', marginBottom: '0.25rem' }}>
-          首頁 | 國際新聞幽默解讀平台
+          半自動化新聞聚合與內容擷取系統
         </p>
         <p style={{ color: '#bfdbfe', fontSize: '0.9rem' }}>
-          Index - Homepage
+          RSS源展示 → 使用者篩選 → 內容擷取 → 優化處理
         </p>
       </header>
 
       <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem' }}>
-        {/* 首頁歡迎和更新時間顯示 */}
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '2rem', color: '#1f2937', marginBottom: '1rem' }}>
-            📰 歡迎來到FOR-NEWS首頁
-          </h2>
-          <p style={{ fontSize: '1.25rem', color: '#374151', marginBottom: '0.5rem' }}>
-            Index Page - 新聞總覽
-          </p>
-          <p style={{ color: '#6b7280', fontSize: '0.9rem', marginBottom: '1rem' }}>
-            等待首次更新 - 每天早晚8點自動更新
-          </p>
 
-          {/* 更新時間和狀態顯示 */}
-          {newsData && (
-            <div style={{ marginBottom: '1rem' }}>
-              <p style={{ color: '#059669', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                ✅ 最後更新：{new Date(newsData.lastUpdated).toLocaleString('zh-TW')}
+        {/* 階段一：RSS新聞源展示 */}
+        <section style={{ marginBottom: '3rem' }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+              color: 'white',
+              padding: '1.5rem'
+            }}>
+              <h2 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>📡</span>
+                階段一：BBC新聞源展示
+              </h2>
+              <p style={{ color: '#fecaca', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                瀏覽BBC各頻道RSS標題，點擊開啟原網站，判斷是否符合需求
               </p>
-              {newsData.note && (
-                <p style={{ color: '#6b7280', fontSize: '0.8rem' }}>
-                  {newsData.note}
-                </p>
+            </div>
+
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ marginBottom: '1rem' }}>
+                <button
+                  onClick={loadRSSNews}
+                  disabled={loading}
+                  style={{
+                    backgroundColor: loading ? '#9ca3af' : '#dc2626',
+                    color: 'white',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '0.9rem',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.2s'
+                  }}
+                >
+                  {loading ? '🔄 載入中...' : '📡 重新載入BBC新聞'}
+                </button>
+              </div>
+
+              {error && (
+                <div style={{
+                  backgroundColor: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  borderRadius: '8px',
+                  padding: '1rem',
+                  marginBottom: '1rem'
+                }}>
+                  <p style={{ color: '#dc2626' }}>❌ {error}</p>
+                </div>
+              )}
+
+              {rssNews.length > 0 ? (
+                <div style={{ display: 'grid', gap: '0.75rem' }}>
+                  {rssNews.slice(0, 10).map((news, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        backgroundColor: '#f9fafb',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        padding: '1rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f3f4f6';
+                        e.currentTarget.style.borderColor = '#d1d5db';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f9fafb';
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                      }}
+                      onClick={() => window.open(news.link, '_blank')}
+                    >
+                      <h3 style={{
+                        fontSize: '1rem',
+                        fontWeight: 'bold',
+                        marginBottom: '0.5rem',
+                        color: '#1f2937'
+                      }}>
+                        {news.title}
+                      </h3>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '0.8rem',
+                        color: '#6b7280'
+                      }}>
+                        <span>📰 {news.source}</span>
+                        <span>{new Date(news.pubDate).toLocaleDateString('zh-TW')}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                !loading && (
+                  <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                    <p>暫無BBC新聞，請點擊「重新載入BBC新聞」</p>
+                  </div>
+                )
               )}
             </div>
-          )}
-
-          {/* 手動刷新按鈕 */}
-          <div style={{ marginTop: '1rem' }}>
-            <button
-              onClick={() => fetchNews(false)}
-              disabled={loading}
-              style={{
-                backgroundColor: loading ? '#9ca3af' : '#2563eb',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '0.9rem',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                marginRight: '0.5rem',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseOver={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#1d4ed8')}
-              onMouseOut={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#2563eb')}
-            >
-              {loading ? '🔄 載入中...' : '📡 抓取新聞'}
-            </button>
-
-            <button
-              onClick={() => fetchNews(true)}
-              disabled={loading}
-              style={{
-                backgroundColor: loading ? '#9ca3af' : '#dc2626',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '0.9rem',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                marginRight: '0.5rem',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseOver={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#b91c1c')}
-              onMouseOut={(e) => !loading && ((e.target as HTMLButtonElement).style.backgroundColor = '#dc2626')}
-            >
-              {loading ? '🔄 載入中...' : '🆕 生成新聞'}
-            </button>
-
-            <button
-              onClick={() => {
-                const now = new Date().toLocaleString('zh-TW');
-                const status = newsData ? `最後更新：${new Date(newsData.lastUpdated).toLocaleString('zh-TW')}` : '尚未載入新聞';
-                alert(`當前時間：${now}\n\n📢 使用說明：\n📡 「抓取新聞」- 嘗試從RSS獲取真實新聞\n🆕 「生成新聞」- 生成最新的示例新聞內容\n- 點擊新聞卡片可查看詳細內容\n- 有鏈接的新聞會開啟原文頁面\n- ${status}\n\n兩種模式都會提供優質新聞內容！`);
-              }}
-              style={{
-                backgroundColor: '#059669',
-                color: 'white',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '8px',
-                border: 'none',
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseOver={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = '#047857')}
-              onMouseOut={(e) => ((e.target as HTMLButtonElement).style.backgroundColor = '#059669')}
-            >
-              ℹ️ 使用說明
-            </button>
           </div>
+        </section>
 
-          {/* 錯誤顯示 */}
-          {error && (
+        {/* 階段二：內容擷取系統 */}
+        <section style={{ marginBottom: '3rem' }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
+          }}>
             <div style={{
-              marginTop: '1rem',
-              padding: '1rem',
-              backgroundColor: '#fef2f2',
-              borderRadius: '8px',
-              border: '1px solid #fecaca'
+              background: 'linear-gradient(135deg, #059669, #047857)',
+              color: 'white',
+              padding: '1.5rem'
             }}>
-              <p style={{ color: '#dc2626', fontSize: '0.9rem' }}>
-                ❌ 載入錯誤：{error}
+              <h2 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🔍</span>
+                階段二：內容擷取系統
+              </h2>
+              <p style={{ color: '#a7f3d0', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                輸入新聞網址，使用Mercury技術擷取完整文章內容
               </p>
-              <button
-                onClick={fetchNews}
-                style={{
-                  marginTop: '0.5rem',
-                  backgroundColor: '#dc2626',
-                  color: 'white',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  border: 'none',
-                  fontSize: '0.8rem',
-                  cursor: 'pointer'
-                }}
-              >
-                重新嘗試
-              </button>
             </div>
-          )}
-        </div>
 
-        {/* 載入狀態 */}
-        {loading && (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔄</div>
-            <p>正在載入最新新聞...</p>
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                  marginBottom: '0.5rem',
+                  color: '#374151'
+                }}>
+                  新聞網址：
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input
+                    type="url"
+                    value={inputUrl}
+                    onChange={(e) => setInputUrl(e.target.value)}
+                    placeholder="請貼上新聞文章的完整網址..."
+                    style={{
+                      flex: 1,
+                      padding: '0.75rem',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      fontSize: '0.9rem'
+                    }}
+                  />
+                  <button
+                    onClick={extractContent}
+                    disabled={extracting || !inputUrl.trim()}
+                    style={{
+                      backgroundColor: extracting || !inputUrl.trim() ? '#9ca3af' : '#059669',
+                      color: 'white',
+                      padding: '0.75rem 1.5rem',
+                      borderRadius: '8px',
+                      border: 'none',
+                      fontSize: '0.9rem',
+                      cursor: extracting || !inputUrl.trim() ? 'not-allowed' : 'pointer',
+                      transition: 'background-color 0.2s'
+                    }}
+                  >
+                    {extracting ? '🔄 擷取中...' : '🔍 擷取內容'}
+                  </button>
+                </div>
+              </div>
+
+              {extractedArticle && (
+                <div style={{
+                  backgroundColor: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
+                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  marginTop: '1rem'
+                }}>
+                  <h3 style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    marginBottom: '1rem',
+                    color: '#166534'
+                  }}>
+                    ✅ 內容擷取成功
+                  </h3>
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <strong style={{ color: '#166534' }}>標題：</strong>
+                    <p style={{ marginTop: '0.25rem', color: '#374151' }}>{extractedArticle.title}</p>
+                  </div>
+
+                  {extractedArticle.author && (
+                    <div style={{ marginBottom: '1rem' }}>
+                      <strong style={{ color: '#166534' }}>作者：</strong>
+                      <span style={{ color: '#374151' }}>{extractedArticle.author}</span>
+                    </div>
+                  )}
+
+                  {extractedArticle.publishDate && (
+                    <div style={{ marginBottom: '1rem' }}>
+                      <strong style={{ color: '#166534' }}>發布日期：</strong>
+                      <span style={{ color: '#374151' }}>
+                        {new Date(extractedArticle.publishDate).toLocaleString('zh-TW')}
+                      </span>
+                    </div>
+                  )}
+
+                  <div style={{ marginBottom: '1rem' }}>
+                    <strong style={{ color: '#166534' }}>文字內容預覽：</strong>
+                    <div style={{
+                      marginTop: '0.5rem',
+                      padding: '1rem',
+                      backgroundColor: 'white',
+                      borderRadius: '6px',
+                      maxHeight: '200px',
+                      overflowY: 'auto',
+                      fontSize: '0.9rem',
+                      lineHeight: '1.5',
+                      color: '#374151'
+                    }}>
+                      {extractedArticle.textContent || '無法擷取文字內容'}
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                    <strong>原始網址：</strong>
+                    <a
+                      href={extractedArticle.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#059669', textDecoration: 'underline' }}
+                    >
+                      {extractedArticle.url}
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </section>
 
-        {/* 新聞分類區塊 */}
-        {newsData && !loading && (
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            {/* 世界新聞 */}
-            <section style={{ marginBottom: '2rem', backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)' }}>
-              <div style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', color: 'white', padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>📰</span>
-                  世界新聞 ({newsData.world.length})
-                </h3>
-              </div>
-              <div style={{ padding: '1.5rem', backgroundColor: '#f9fafb' }}>
-                {newsData.world.length > 0 ? (
-                  newsData.world.map(news => <NewsCard key={news.id} news={news} />)
-                ) : (
-                  <div style={{ textAlign: 'center', padding: '2rem' }}>
-                    <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>暫無世界新聞</p>
-                    <p style={{ fontSize: '0.8rem', color: '#9ca3af' }}>點擊「刷新新聞」獲取最新內容</p>
-                  </div>
-                )}
-              </div>
-            </section>
+        {/* 使用說明 */}
+        <section style={{
+          backgroundColor: '#fffbeb',
+          border: '1px solid #fed7aa',
+          borderRadius: '12px',
+          padding: '1.5rem'
+        }}>
+          <h3 style={{
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            color: '#92400e',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span>ℹ️</span>
+            使用說明
+          </h3>
+          <ol style={{ color: '#92400e', lineHeight: '1.6' }}>
+            <li><strong>階段一</strong>：瀏覽BBC新聞標題，包含頭條、世界、英國、商業、科技新聞</li>
+            <li><strong>階段二</strong>：點擊感興趣的標題開啟BBC原網站閱讀完整內容</li>
+            <li><strong>階段三</strong>：如文章符合需求，複製網址到輸入框並點擊「擷取內容」</li>
+            <li><strong>結果</strong>：系統使用Mercury技術自動擷取文章完整內容</li>
+            <li><strong>優勢</strong>：專注BBC新聞源，穩定性高，內容品質優良</li>
+          </ol>
+        </section>
 
-            {/* 科技新聞 */}
-            <section style={{ marginBottom: '2rem', backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)' }}>
-              <div style={{ background: 'linear-gradient(135deg, #059669, #047857)', color: 'white', padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>💻</span>
-                  科技新聞 ({newsData.tech.length})
-                </h3>
-              </div>
-              <div style={{ padding: '1.5rem', backgroundColor: '#f9fafb' }}>
-                {newsData.tech.length > 0 ? (
-                  newsData.tech.map(news => <NewsCard key={news.id} news={news} />)
-                ) : (
-                  <div style={{ textAlign: 'center', padding: '2rem' }}>
-                    <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>暫無科技新聞</p>
-                    <p style={{ fontSize: '0.8rem', color: '#9ca3af' }}>點擊「刷新新聞」獲取最新內容</p>
-                  </div>
-                )}
-              </div>
-            </section>
-
-            {/* 經濟新聞 */}
-            <section style={{ marginBottom: '2rem', backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)' }}>
-              <div style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: 'white', padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span>💰</span>
-                  經濟新聞 ({newsData.economy.length})
-                </h3>
-              </div>
-              <div style={{ padding: '1.5rem', backgroundColor: '#f9fafb' }}>
-                {newsData.economy.length > 0 ? (
-                  newsData.economy.map(news => <NewsCard key={news.id} news={news} />)
-                ) : (
-                  <div style={{ textAlign: 'center', padding: '2rem' }}>
-                    <p style={{ color: '#6b7280', marginBottom: '0.5rem' }}>暫無經濟新聞</p>
-                    <p style={{ fontSize: '0.8rem', color: '#9ca3af' }}>點擊「刷新新聞」獲取最新內容</p>
-                  </div>
-                )}
-              </div>
-            </section>
-          </div>
-        )}
       </main>
 
       {/* Footer */}
-      <footer style={{ backgroundColor: '#1f2937', color: 'white', textAlign: 'center', padding: '2rem 1rem', marginTop: '3rem' }}>
+      <footer style={{
+        backgroundColor: '#1f2937',
+        color: 'white',
+        textAlign: 'center',
+        padding: '2rem 1rem',
+        marginTop: '3rem'
+      }}>
         <p style={{ fontSize: '0.9rem' }}>
-          FOR-NEWS © 2025 - 用幽默的方式理解世界 🌍
+          FOR-NEWS © 2025 - 半自動化新聞聚合系統 🔍
         </p>
       </footer>
     </div>
-  )
+  );
 }

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "node",
+      "args": [
+        "/mnt/c/Users/KEN/for-news/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
+        "/mnt/c/Users/KEN/for-news"
+      ]
+    }
+  }
+}

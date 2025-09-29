@@ -1,0 +1,131 @@
+{
+  "project": {
+    "name": "FOR-NEWS",
+    "description": "半自動化BBC新聞聚合與內容擷取系統",
+    "version": "2.0.0",
+    "created": "2025-09-29",
+    "lastUpdated": "2025-09-29T12:43:33Z"
+  },
+  "developmentHistory": [
+    {
+      "date": "2025-09-29",
+      "version": "1.0.0",
+      "changes": [
+        "初始化專案結構",
+        "建立RSS新聞抓取功能",
+        "實現關鍵字分類系統"
+      ],
+      "status": "completed"
+    },
+    {
+      "date": "2025-09-29",
+      "version": "2.0.0",
+      "changes": [
+        "重構為半自動化系統",
+        "專注於BBC新聞源",
+        "整合@postlight/mercury-parser",
+        "建立兩階段工作流",
+        "安裝MCP filesystem server"
+      ],
+      "status": "completed"
+    }
+  ],
+  "currentArchitecture": {
+    "frontend": "Next.js 15.5.4 + React 19.1.0",
+    "rssParser": "rss-parser ^3.13.0",
+    "contentExtractor": "@postlight/mercury-parser ^2.2.1",
+    "memorySystem": "@modelcontextprotocol/server-filesystem ^2025.8.21",
+    "newsSource": "BBC (5個頻道)",
+    "workflow": "RSS展示 → 使用者篩選 → 內容擷取"
+  },
+  "apiEndpoints": [
+    {
+      "path": "/api/rss-feeds",
+      "method": "GET",
+      "description": "抓取BBC各頻道RSS新聞",
+      "status": "active"
+    },
+    {
+      "path": "/api/extract-content",
+      "method": "POST",
+      "description": "使用Mercury擷取文章內容",
+      "status": "active"
+    }
+  ],
+  "removedFeatures": [
+    {
+      "feature": "智能關鍵字分類",
+      "reason": "改為使用者主導篩選",
+      "removedDate": "2025-09-29"
+    },
+    {
+      "endpoints": ["/api/news", "/api/refresh"],
+      "reason": "重構為新的API架構",
+      "removedDate": "2025-09-29"
+    }
+  ],
+  "bbcNewsSources": [
+    {
+      "name": "BBC News - Top Stories",
+      "url": "https://feeds.bbci.co.uk/news/rss.xml",
+      "enabled": true
+    },
+    {
+      "name": "BBC News - World",
+      "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "enabled": true
+    },
+    {
+      "name": "BBC News - UK",
+      "url": "https://feeds.bbci.co.uk/news/uk/rss.xml",
+      "enabled": true
+    },
+    {
+      "name": "BBC News - Business",
+      "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+      "enabled": true
+    },
+    {
+      "name": "BBC News - Technology",
+      "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+      "enabled": true
+    }
+  ],
+  "userRequests": [
+    {
+      "date": "2025-09-29",
+      "request": "調整為BBC單一新聞源",
+      "reason": "減少錯誤問題，提高穩定性",
+      "status": "implemented"
+    },
+    {
+      "date": "2025-09-29",
+      "request": "安裝MCP提升記憶功能",
+      "reason": "記錄開發歷史和專案狀態",
+      "status": "implemented"
+    }
+  ],
+  "nextSteps": [
+    "配置Claude Desktop使用MCP",
+    "測試MCP功能",
+    "收集用戶反饋",
+    "根據需求優化功能",
+    "考慮添加更多新聞源"
+  ],
+  "technicalNotes": {
+    "mcpInstallation": {
+      "successful": ["@modelcontextprotocol/server-filesystem"],
+      "failed": ["@modelcontextprotocol/server-git", "@modelcontextprotocol/server-sqlite"],
+      "reason": "套件名稱錯誤或尚未發布",
+      "solution": "使用filesystem MCP + 本地JSON記錄系統"
+    },
+    "memoryStrategy": {
+      "approach": "基於文件的記憶系統",
+      "components": [
+        "memory-system.json - 主要記憶數據",
+        "DEVELOPMENT_LOG.md - 開發日誌",
+        "backup.sh - 自動備份腳本"
+      ]
+    }
+  }
+}

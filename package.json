@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@modelcontextprotocol/server-filesystem": "^2025.8.21",
     "@postlight/mercury-parser": "^2.2.1",
     "next": "15.5.4",
     "react": "19.1.0",

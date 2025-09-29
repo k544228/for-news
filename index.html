@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOR-NEWS - 首頁 | 國際新聞幽默解讀平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            color: #dbeafe;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header .index-label {
+            color: #bfdbfe;
+            font-size: 0.9rem;
+        }
+
+        /* Main content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-section h2 {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-section .subtitle {
+            font-size: 1.25rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section .update-info {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* News sections */
+        .news-grid {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .news-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .news-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-header {
+            padding: 1.5rem;
+            color: white;
+            font-weight: bold;
+        }
+
+        .news-header.world {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .news-header.tech {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .news-header.environment {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        .news-header h3 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .news-content {
+            padding: 2rem;
+            background: #f9fafb;
+            text-align: center;
+        }
+
+        .news-content p {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-content .update-time {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header - Index Page -->
+    <header class="header">
+        <h1>FOR-NEWS 🗞️</h1>
+        <p class="subtitle">首頁 | 國際新聞幽默解讀平台</p>
+        <p class="index-label">Index - Homepage</p>
+    </header>
+
+    <main class="container">
+        <!-- 首頁歡迎和更新時間顯示 -->
+        <div class="welcome-section">
+            <h2>📰 歡迎來到FOR-NEWS首頁</h2>
+            <p class="subtitle">Index Page - 新聞總覽</p>
+            <p class="update-info">
+                <span class="status-indicator"></span>
+                等待首次更新 - 每天早晚8點自動更新
+            </p>
+
+            <!-- 刷新按鈕 -->
+            <div style="margin-top: 1rem;">
+                <button onclick="window.location.reload()"
+                        style="background-color: #2563eb; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; font-size: 0.9rem; cursor: pointer; margin-right: 0.5rem; transition: background-color 0.2s;">
+                    🔄 刷新頁面
+                </button>
+
+                <button onclick="showInfo()"
+                        style="background-color: #059669; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; font-size: 0.9rem; cursor: pointer; transition: background-color 0.2s;">
+                    ℹ️ 使用說明
+                </button>
+            </div>
+        </div>
+
+        <!-- 新聞分類區塊 -->
+        <div class="news-grid">
+            <!-- 世界新聞 -->
+            <section class="news-section" data-category="world">
+                <div class="news-header world">
+                    <h3>
+                        <span>📰</span>
+                        世界新聞
+                    </h3>
+                </div>
+                <div class="news-content">
+                    <div class="text-center text-gray-500 py-8">
+                        <p>正在載入世界新聞...</p>
+                        <div class="mt-2">
+                            <div class="animate-spin inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 科技新聞 -->
+            <section class="news-section" data-category="tech">
+                <div class="news-header tech">
+                    <h3>
+                        <span>💻</span>
+                        科技新聞
+                    </h3>
+                </div>
+                <div class="news-content">
+                    <div class="text-center text-gray-500 py-8">
+                        <p>正在載入科技新聞...</p>
+                        <div class="mt-2">
+                            <div class="animate-spin inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 環境新聞 -->
+            <section class="news-section" data-category="environment">
+                <div class="news-header environment">
+                    <h3>
+                        <span>🌱</span>
+                        環境新聞
+                    </h3>
+                </div>
+                <div class="news-content">
+                    <div class="text-center text-gray-500 py-8">
+                        <p>正在載入環境新聞...</p>
+                        <div class="mt-2">
+                            <div class="animate-spin inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>FOR-NEWS © 2025 - 用幽默的方式理解世界 🌍</p>
+    </footer>
+
+    <!-- 載入 JavaScript 模組 -->
+    <script src="./js/types.js"></script>
+    <script src="./js/mcp-client.js"></script>
+    <script src="./js/news-loader.js"></script>
+
+    <script>
+        // 主要初始化腳本
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 FOR-NEWS 正在啟動...');
+
+            try {
+                // 初始化新聞載入器
+                await window.newsLoader.init();
+
+                // 記錄頁面載入到 MCP
+                if (window.MCPClient) {
+                    try {
+                        await window.MCPClient.addDevelopmentLog({
+                            type: 'feature',
+                            title: '頁面載入完成',
+                            description: '使用者載入 FOR-NEWS 首頁，動態新聞系統已啟動',
+                            author: 'System',
+                            relatedFiles: ['index.html', 'js/news-loader.js'],
+                            impact: 'low',
+                            tags: ['page-load', 'user-interaction']
+                        });
+                    } catch (error) {
+                        console.warn('⚠️ Failed to log page load:', error);
+                    }
+                }
+
+                console.log('✅ FOR-NEWS 啟動完成');
+            } catch (error) {
+                console.error('❌ FOR-NEWS 啟動失敗:', error);
+            }
+        });
+
+        // 顯示使用說明
+        function showInfo() {
+            const now = new Date().toLocaleString('zh-TW');
+
+            // 獲取統計資料
+            window.newsLoader.getStatistics().then(stats => {
+                let statsText = '';
+                if (stats) {
+                    statsText = `\n📊 最近7天統計：\n- 新聞更新次數：${stats.totalUpdates}\n- 新增新聞：${stats.totalNewsAdded}篇\n- 更新新聞：${stats.totalNewsUpdated}篇`;
+                }
+
+                alert(`當前時間：${now}\n\n📢 FOR-NEWS 使用說明：\n\n🔄 功能特色：\n- 自動載入最新新聞內容\n- 點擊新聞可查看詳細分析\n- 支援幽默解讀和深度分析\n- 具備記憶功能，追蹤更新歷史\n\n⚡ 操作提示：\n- 點擊「刷新頁面」載入最新內容\n- 使用 Ctrl+R 快捷鍵快速重新整理\n- 切換頁面時會自動檢查更新\n- 每5分鐘自動檢查新內容${statsText}\n\n🤖 技術支援：\n- 整合 MCP 記憶系統\n- 本地備份存儲\n- 智能錯誤處理`);
+            }).catch(() => {
+                alert(`當前時間：${now}\n\n📢 使用說明：\n- 點擊「刷新頁面」可重新載入最新內容\n- 點擊新聞項目可查看詳細內容\n- 系統會自動檢查並載入新內容\n- 如有問題可重新整理頁面\n\n歡迎經常回來查看最新消息！`);
+            });
+        }
+
+        // 顯示更新歷史
+        async function showUpdateHistory() {
+            try {
+                const history = await window.newsLoader.getUpdateHistory(10);
+
+                if (history.length === 0) {
+                    alert('目前還沒有更新歷史記錄');
+                    return;
+                }
+
+                let historyText = '📜 最近10次更新記錄：\n\n';
+                history.forEach((record, index) => {
+                    const date = new Date(record.timestamp).toLocaleString('zh-TW');
+                    historyText += `${index + 1}. ${record.summary}\n   時間: ${date}\n   來源: ${record.source === 'auto' ? '自動' : '手動'}\n\n`;
+                });
+
+                alert(historyText);
+            } catch (error) {
+                console.error('Failed to show update history:', error);
+                alert('無法載入更新歷史，請稍後再試');
+            }
+        }
+
+        // 全域函數導出
+        window.showInfo = showInfo;
+        window.showUpdateHistory = showUpdateHistory;
+    </script>
+</body>
+</html>

@@ -1,27 +1,22 @@
 {
   "name": "for-news",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "國際新聞幽默解讀平台",
+  "main": "index.html",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "build": "echo 'Static HTML build complete'",
+    "start": "node -e \"console.log('FOR-NEWS running at http://localhost:3000'); require('http').createServer((req,res)=>{const fs=require('fs');const path=require('path');let file=req.url==='/'?'/index.html':req.url;const ext=path.extname(file);const mime={'html':'text/html','js':'application/javascript','css':'text/css','json':'application/json'};try{const data=fs.readFileSync('.'+file);res.writeHead(200,{'Content-Type':mime[ext.substring(1)]||'text/plain'});res.end(data)}catch(e){res.writeHead(404);res.end('Not Found')}}).listen(3000)\"",
+    "dev": "npm start",
+    "update-news": "node scripts/update-news.js"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "node-fetch": "^3.3.2"
   },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
-  }
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["news", "humor", "international", "static", "html"],
+  "author": "FOR-NEWS Team",
+  "license": "MIT"
 }

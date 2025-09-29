@@ -1,17 +1,12 @@
 {
   "version": 2,
   "name": "for-news",
+  "framework": null,
+  "buildCommand": "echo 'Static build complete'",
+  "outputDirectory": ".",
   "builds": [
     {
-      "src": "index.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "js/**/*.js",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "data/**/*.json",
+      "src": "**",
       "use": "@vercel/static"
     }
   ],

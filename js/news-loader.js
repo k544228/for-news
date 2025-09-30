@@ -37,19 +37,27 @@ class NewsLoader {
       // 儲存當前新聞用於比較
       const oldNews = this.currentNews;
 
-      // 從 data/news.json 載入新聞
-      const response = await fetch('./data/news.json', {
-        cache: 'no-cache', // 確保獲取最新數據
-        headers: {
-          'Cache-Control': 'no-cache'
+      let newsData;
+
+      // 檢測是否為 file:// 協議
+      if (location.protocol === 'file:') {
+        console.log('🗂️ File protocol detected, using sample data');
+        newsData = this.getSampleNewsData();
+      } else {
+        // 從 data/news.json 載入新聞
+        const response = await fetch('./data/news.json', {
+          cache: 'no-cache', // 確保獲取最新數據
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        newsData = await response.json();
       }
-
-      const newsData = await response.json();
 
       // 驗證數據格式
       this.validateNewsData(newsData);
@@ -370,6 +378,110 @@ function showNewsDetail(newsId) {
     }
   });
 }
+
+// 為 NewsLoader 類添加示例數據方法
+NewsLoader.prototype.getSampleNewsData = function() {
+  const now = new Date().toISOString();
+
+  return {
+    world: [
+      {
+        id: `world-demo-${Date.now()}-1`,
+        title: "全球氣候峰會達成新協議",
+        content: "各國領導人在最新的氣候峰會上達成新的減排協議，承諾在2030年前將碳排放量減少50%。這項協議被認為是氣候行動的重要里程碑。",
+        category: "world",
+        source: "BBC",
+        publishedAt: now,
+        analysis: {
+          affectedGroups: ["政策制定者", "環保組織", "一般民眾", "工業界"],
+          beforeImpact: "各國對氣候變遷的應對措施分歧較大，缺乏統一的行動計畫",
+          afterImpact: "預期將推動全球綠色能源轉型，但實施效果仍需時間驗證",
+          humorousInterpretation: "終於有人做了我們早就該做的事情，只是晚了大概20年而已 🌍"
+        }
+      },
+      {
+        id: `world-demo-${Date.now()}-2`,
+        title: "國際貿易新協定簽署",
+        content: "多個國家簽署新的貿易協定，旨在促進跨境商務往來並減少貿易壁壘。專家認為這將有助於全球經濟復甦。",
+        category: "world",
+        source: "CNN",
+        publishedAt: now,
+        analysis: {
+          affectedGroups: ["進出口商", "消費者", "政府", "物流業"],
+          beforeImpact: "國際貿易受到各種關稅和限制影響，成本居高不下",
+          afterImpact: "預期商品價格下降，國際合作加強，但調整期可能帶來短期衝擊",
+          humorousInterpretation: "大家終於發現一起賺錢比互相設障礙要好玩多了 💰"
+        }
+      }
+    ],
+    tech: [
+      {
+        id: `tech-demo-${Date.now()}-1`,
+        title: "AI技術在醫療診斷的新突破",
+        content: "最新的人工智慧診斷系統能夠在30秒內分析醫學影像，準確率達到95%。這項技術將大幅提升醫療效率。",
+        category: "tech",
+        source: "Tech Crunch",
+        publishedAt: now,
+        analysis: {
+          affectedGroups: ["醫生", "病患", "醫療機構", "保險公司"],
+          beforeImpact: "醫療診斷需要專業醫師長時間分析，容易出現人為誤判",
+          afterImpact: "診斷速度大幅提升，醫療資源配置更有效率，但需要關注技術依賴風險",
+          humorousInterpretation: "AI醫生24小時不休息，終於不用擔心醫生心情不好影響診斷了 🤖"
+        }
+      },
+      {
+        id: `tech-demo-${Date.now()}-2`,
+        title: "量子計算機商用化進程加速",
+        content: "科技巨頭宣布推出首款商用量子計算服務，為複雜計算問題提供前所未有的處理能力。",
+        category: "tech",
+        source: "Wired",
+        publishedAt: now,
+        analysis: {
+          affectedGroups: ["科研機構", "金融業", "科技公司", "網路安全"],
+          beforeImpact: "複雜計算需要大量時間和資源，限制了科學研究進展",
+          afterImpact: "計算能力飛躍提升，但也帶來資訊安全和技術門檻挑戰",
+          humorousInterpretation: "終於有電腦可以算出我這個月花了多少錢買咖啡了 ☕"
+        }
+      }
+    ],
+    environment: [
+      {
+        id: `environment-demo-${Date.now()}-1`,
+        title: "海洋塑膠清理計畫獲重大進展",
+        content: "海洋清理組織成功測試新型海洋垃圾收集系統，能夠有效清理海洋中的塑膠污染物。",
+        category: "environment",
+        source: "National Geographic",
+        publishedAt: now,
+        analysis: {
+          affectedGroups: ["海洋生物", "漁業", "環保組織", "沿海居民"],
+          beforeImpact: "海洋塑膠污染日益嚴重，威脅海洋生態系統健康",
+          afterImpact: "海洋環境逐步改善，但需要持續投入和全球合作",
+          humorousInterpretation: "海洋終於要擺脫變成巨大垃圾桶的命運了 🌊"
+        }
+      },
+      {
+        id: `environment-demo-${Date.now()}-3`,
+        title: "可再生能源成本創新低",
+        content: "最新報告顯示，太陽能和風能發電成本已降至史上最低點，使得綠色能源更具競爭力。",
+        category: "environment",
+        source: "Reuters",
+        publishedAt: now,
+        analysis: {
+          affectedGroups: ["能源公司", "消費者", "投資者", "傳統能源業"],
+          beforeImpact: "可再生能源成本較高，限制了普及推廣",
+          afterImpact: "綠色能源普及加速，但傳統能源產業面臨轉型壓力",
+          humorousInterpretation: "太陽和風終於決定免費幫人類發電，真是太貼心了 ⚡"
+        }
+      }
+    ],
+    lastUpdated: now,
+    metadata: {
+      totalNews: 6,
+      updateSource: "demo",
+      version: `demo-${new Date().toISOString().split('T')[0]}`
+    }
+  };
+};
 
 // 初始化全域變數
 window.newsLoader = new NewsLoader();

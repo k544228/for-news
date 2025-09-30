@@ -208,9 +208,6 @@ class NewsUpdater {
     console.log('📝 正在記錄到 MCP 系統...');
 
     try {
-      // 這裡應該調用 MCP 記憶系統
-      // 目前使用本地記錄
-
       const updateRecord = {
         timestamp: new Date().toISOString(),
         version: this.newNews.metadata.version,
@@ -220,7 +217,7 @@ class NewsUpdater {
         metadata: this.newNews.metadata
       };
 
-      // 儲存更新記錄
+      // 1. 儲存到本地記錄
       const recordsFile = path.join(CONFIG.dataDir, 'update-records.json');
       let records = [];
 
@@ -240,11 +237,91 @@ class NewsUpdater {
 
       await fs.writeFile(recordsFile, JSON.stringify(records, null, 2));
 
+      // 2. 儲存到 MCP 系統
+      await this.saveToMCPSystem(updateRecord);
+
       console.log('✅ 已記錄到 MCP 系統');
 
     } catch (error) {
       console.warn('⚠️ MCP 記錄失敗:', error.message);
     }
+  }
+
+  // 儲存到真正的 MCP 系統
+  async saveToMCPSystem(updateRecord) {
+    const mcpDir = path.join(__dirname, '..', '..', 'MCP', 'data');
+
+    // 確保 MCP 目錄存在
+    try {
+      await fs.access(mcpDir);
+    } catch (error) {
+      console.warn('⚠️ MCP 目錄不存在，跳過 MCP 記錄');
+      return;
+    }
+
+    // 儲存新聞歷史
+    const newsHistoryFile = path.join(mcpDir, 'news-history.json');
+    let newsHistory = [];
+
+    try {
+      const data = await fs.readFile(newsHistoryFile, 'utf8');
+      newsHistory = JSON.parse(data);
+    } catch (error) {
+      // 檔案不存在或損壞，建立新陣列
+    }
+
+    // 新增這次的更新記錄
+    const historyEntry = {
+      id: `news-update-${Date.now()}`,
+      timestamp: updateRecord.timestamp,
+      type: 'news_update',
+      summary: updateRecord.summary,
+      details: {
+        version: updateRecord.version,
+        changes: updateRecord.changes,
+        metadata: updateRecord.metadata
+      }
+    };
+
+    newsHistory.push(historyEntry);
+
+    // 只保留最近50筆記錄
+    if (newsHistory.length > 50) {
+      newsHistory = newsHistory.slice(-50);
+    }
+
+    await fs.writeFile(newsHistoryFile, JSON.stringify(newsHistory, null, 2));
+
+    // 更新統計數據
+    await this.updateMCPStatistics(updateRecord.changes);
+  }
+
+  // 更新 MCP 統計數據
+  async updateMCPStatistics(changes) {
+    const mcpDir = path.join(__dirname, '..', '..', 'MCP', 'data');
+    const statsFile = path.join(mcpDir, 'statistics.json');
+
+    let stats = {
+      totalUpdates: 0,
+      totalNewsAdded: 0,
+      totalNewsUpdated: 0,
+      lastUpdateTime: null
+    };
+
+    try {
+      const data = await fs.readFile(statsFile, 'utf8');
+      stats = JSON.parse(data);
+    } catch (error) {
+      // 檔案不存在，使用預設值
+    }
+
+    // 更新統計
+    stats.totalUpdates = (stats.totalUpdates || 0) + 1;
+    stats.totalNewsAdded = (stats.totalNewsAdded || 0) + changes.added.length;
+    stats.totalNewsUpdated = (stats.totalNewsUpdated || 0) + changes.updated.length;
+    stats.lastUpdateTime = new Date().toISOString();
+
+    await fs.writeFile(statsFile, JSON.stringify(stats, null, 2));
   }
 
   // 計算變更
